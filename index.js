@@ -18,8 +18,27 @@ app.post('/add',async(req,res)=>{
     const {login,password} = req.body
     await User.create({login,password})
     res.send(`user was created`)
+    
+})
+app.delete('/:id',async(req,res)=>{
+    const {id} = req.params
+    const candidate = await User.findByPk(id)
+    if(!candidate){
+        res.send('Error')
+    }
+    await candidate.destroy()
+    res.send(`user was destroyed`)
 })
 
-app.listen(process.env.PORT || 8080,()=>{
-    console.log(`server is running on port: ${process.env.PORT || 8080}`)
-})
+async function start(){
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+        app.listen(process.env.PORT || 8080,()=>{
+            console.log(`server is running on port: ${process.env.PORT || 8080}`)
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+start()
